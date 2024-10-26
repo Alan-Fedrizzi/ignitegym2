@@ -11,6 +11,7 @@ import { GluestackUIProvider, Text, Center } from "@gluestack-ui/themed";
 import { config } from "./config/gluestack-ui.config";
 
 import { Loading } from "@components/Loading";
+import { SignIn } from "@screens/SignIn";
 
 export default function App() {
   // useFonts retorna um array, na primeira posição um boolean
@@ -26,14 +27,7 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      {fonstLoaded ? (
-        <Center flex={1} bg="$gray700">
-          {/* <Text color="white" fontSize={34}> */}
-          <Text>Home</Text>
-        </Center>
-      ) : (
-        <Loading />
-      )}
+      {fonstLoaded ? <SignIn /> : <Loading />}
     </GluestackUIProvider>
   );
 }
