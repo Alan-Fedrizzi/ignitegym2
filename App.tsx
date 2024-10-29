@@ -33,4 +33,4 @@ export default function App() {
 }
 
 // 2 Component Library
-// Imagem de background
+// Criando a SignUp
