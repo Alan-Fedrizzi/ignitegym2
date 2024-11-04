@@ -4,14 +4,14 @@ import {
   Roboto_400Regular,
   Roboto_700Bold,
 } from "@expo-google-fonts/roboto";
-import { GluestackUIProvider, Text, Center } from "@gluestack-ui/themed";
+import { GluestackUIProvider } from "@gluestack-ui/themed";
 // esse é o tema padrão
 // import { config } from "@gluestack-ui/config";
 // esse é o tema que alteramos
 import { config } from "./config/gluestack-ui.config";
 
+import { Routes } from "@routes/index";
 import { Loading } from "@components/Loading";
-import { SignIn } from "@screens/SignIn";
 
 export default function App() {
   // useFonts retorna um array, na primeira posição um boolean
@@ -27,10 +27,10 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      {fonstLoaded ? <SignIn /> : <Loading />}
+      {fonstLoaded ? <Routes /> : <Loading />}
     </GluestackUIProvider>
   );
 }
 
-// 2 Component Library
-// Criando a SignUp
+// 5 finalizando as interfaces
+// proposta
