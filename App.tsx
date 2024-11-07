@@ -33,4 +33,4 @@ export default function App() {
 }
 
 // 5 finalizando as interfaces
-// proposta
+// criando component exercise..
