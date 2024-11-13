@@ -4,8 +4,18 @@ import { Heading, HStack, Text, VStack } from "@gluestack-ui/themed";
 
 import { HomeHeader } from "@components/HomeHeader";
 import { Group } from "@components/Group";
+import { ExerciseCard } from "@components/ExerciseCard";
 
 export function Home() {
+  const [exercises, setExercises] = useState([
+    "Puxada frontal",
+    "Remada curvada",
+    "Remada unilateral",
+    "Levantamento terra",
+    "Levantamento terra",
+    "Levantamento terra",
+    "Levantamento terra",
+  ]);
   const [groups, setGroups] = useState([
     "Costas",
     "Bíceps",
@@ -24,7 +34,9 @@ export function Home() {
         renderItem={({ item }) => (
           <Group
             name={item}
-            isActive={groupSelected === item}
+            // isActive={groupSelected === item}
+            // como é case sensitive:
+            isActive={groupSelected.toLowerCase() === item.toLowerCase()}
             onPress={() => setGroupSelected(item)}
           />
         )}
@@ -47,15 +59,23 @@ export function Home() {
         />
       </HStack> */}
 
-      <VStack px="$8">
+      <VStack flex={1} px="$8">
         <HStack justifyContent="space-between" mb="$5" alignItems="center">
           <Heading color="$gray200" fontSize="$md">
             Exercícios
           </Heading>
           <Text color="$gray200" fontSize="$sm" fontFamily="$body">
-            4
+            {exercises.length}
           </Text>
         </HStack>
+
+        <FlatList
+          data={exercises}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => <ExerciseCard />}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
       </VStack>
     </VStack>
   );

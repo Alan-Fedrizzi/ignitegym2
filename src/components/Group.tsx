@@ -18,6 +18,7 @@ export function Group({ name, isActive = false, ...rest }: Props) {
       alignItems="center"
       borderColor="$green500"
       borderWidth={isActive ? 1 : 0}
+      // ele deixou isso no código, mas parece inútil:
       // sx={{
       //   ":active": {
       //     borderWidth: 1,
