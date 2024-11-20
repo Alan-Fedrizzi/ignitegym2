@@ -32,5 +32,4 @@ export default function App() {
   );
 }
 
-// 5 finalizando as interfaces
-// criando component exercise..
+// 6 galeria de fotos
