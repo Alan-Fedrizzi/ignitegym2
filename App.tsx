@@ -33,3 +33,4 @@ export default function App() {
 }
 
 // 6 galeria de fotos
+// utilizando mensagens toast...
