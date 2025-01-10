@@ -32,5 +32,5 @@ export default function App() {
   );
 }
 
-// 6 galeria de fotos
-// utilizando mensagens toast...
+// 7 Formulários
+// instalando react hook form

@@ -14,8 +14,8 @@ export function Routes() {
     // o box por volta é para evitar que a tela fique branca qd muda a rota
     <Box flex={1} bg="$gray700">
       <NavigationContainer theme={theme}>
-        {/* <AuthRoutes /> */}
-        <AppRoutes />
+        <AuthRoutes />
+        {/* <AppRoutes /> */}
       </NavigationContainer>
     </Box>
   );
