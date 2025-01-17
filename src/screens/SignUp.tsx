@@ -29,7 +29,11 @@ export function SignUp() {
   // const [password, setPassword] = useState("");
   // const [passwordConfirm, setPasswordConfirm] = useState("");
 
-  const { control, handleSubmit } = useForm<FormDataProps>();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>();
   // const { control, handleSubmit } = useForm<FormDataProps>({
   //   defaultValues: {
   //     name: "nome do cara",
@@ -92,12 +96,24 @@ export function SignUp() {
                   // quem vai controlar o conteúdo do input não é mais o setName
                   value={value}
                   onChangeText={onChange}
+                  errorMessage={errors.name?.message}
                 />
               )}
             />
+            {/* {errors.name?.message && (
+              <Text color="$white">{errors.name.message}</Text>
+            )} */}
+
             <Controller
               control={control}
               name="email"
+              rules={{
+                required: "Informe o e-mail.",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "E-mail inválido",
+                },
+              }}
               render={({ field: { value, onChange } }) => (
                 <Input
                   placeholder="E-mail"
@@ -105,9 +121,14 @@ export function SignUp() {
                   autoCapitalize="none"
                   value={value}
                   onChangeText={onChange}
+                  errorMessage={errors.email?.message}
                 />
               )}
             />
+            {/* {errors.email?.message && (
+              <Text color="$white">{errors.email.message}</Text>
+            )} */}
+
             <Controller
               control={control}
               name="password"
@@ -120,6 +141,7 @@ export function SignUp() {
                 />
               )}
             />
+
             <Controller
               control={control}
               name="passwordConfirm"
