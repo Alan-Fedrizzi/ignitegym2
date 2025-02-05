@@ -74,10 +74,41 @@ export function SignUp() {
     navigation.goBack();
   }
 
-  function handleSignUp(data: FormDataProps) {
-    // console.log(name, email, password, passwordConfirm);
+  // sem axios
+  async function handleSignUp(
+    formData: Omit<FormDataProps, "passwordConfirm">
+  ) {
+    const response = await fetch("http://192.168.1.42:3333/users", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
     console.log(data);
   }
+  /*
+  // sem async / await
+  function handleSignUp(data: Omit<FormDataProps, "passwordConfirm">) {
+    // console.log(name, email, password, passwordConfirm);
+    // console.log(data);
+
+    // android não vai entender o localhost, temos que colocar o ip da máquina
+    fetch("http://192.168.1.42:3333/users", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((response) => {
+      response.json().then((data) => console.log(data));
+    });
+  }
+  */
 
   return (
     <ScrollView

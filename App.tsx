@@ -32,6 +32,22 @@ export default function App() {
   );
 }
 
-// 8 integração com backend
-// ...
+// API
+// cd api
+// npm start
+// roda na porta 3333
+// documentação:
+// http://localhost:3333/api-docs/
+
+// Beekeeper
+// connection type: SQLite
+// chose file: api/src/database/database.db
+// connect
+// na esquerda, clica com o botão direito do mouse > view data
+
+// test@test.com
+// 123456
+
+// 3 http client
+// utlizando axios
 // obs: sobre a aplicação tem a apllicação inicial desse módulo
