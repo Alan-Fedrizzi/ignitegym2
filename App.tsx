@@ -32,5 +32,6 @@ export default function App() {
   );
 }
 
-// 7 Formulários
-// Utilizando Schema Validations
+// 8 integração com backend
+// ...
+// obs: sobre a aplicação tem a apllicação inicial desse módulo
