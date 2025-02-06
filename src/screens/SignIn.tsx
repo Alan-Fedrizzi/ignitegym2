@@ -40,6 +40,10 @@ export function SignIn() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormDataProps>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
     resolver: yupResolver(signInSchema),
   });
 
@@ -101,7 +105,9 @@ export function SignIn() {
               render={({ field: { value, onChange } }) => (
                 <Input
                   placeholder="Senha"
-                  secureTextEntry
+                  // secureTextEntry
+                  // alterei para ter o ícone de mostrar/esconder senha
+                  isPassword
                   value={value}
                   onChangeText={onChange}
                   errorMessage={errors.password?.message}

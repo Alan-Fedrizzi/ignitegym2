@@ -1,25 +1,41 @@
+import { useState } from "react";
 import { ComponentProps } from "react";
 import {
   Input as GluestackInput,
   InputField,
+  InputSlot,
+  InputIcon,
   FormControl,
   FormControlError,
   FormControlErrorText,
 } from "@gluestack-ui/themed";
+import { Eye, EyeOff, X } from "lucide-react-native";
 
 type Props = ComponentProps<typeof InputField> & {
   isReadOnly?: boolean;
   errorMessage?: string | null;
   isInvalid?: boolean;
+  isPassword?: boolean;
 };
 
 export function Input({
   isReadOnly = false,
   errorMessage = null,
   isInvalid = false,
+  isPassword = false,
+  onChangeText,
   ...rest
 }: Props) {
   const invalid = !!errorMessage || isInvalid;
+  const [showPassword, setShowPassword] = useState(false);
+
+  function handleClearInput() {
+    if (onChangeText) onChangeText("");
+  }
+
+  function handleTogglePassword() {
+    setShowPassword((showState) => !showState);
+  }
 
   return (
     <FormControl isInvalid={invalid} w="$full" mb="$4">
@@ -46,8 +62,22 @@ export function Input({
           px="$4"
           fontFamily="$body"
           placeholderTextColor="$gray300"
+          type={isPassword && !showPassword ? "password" : "text"}
+          onChangeText={onChangeText}
           {...rest}
         />
+        {isPassword && (
+          <InputSlot onPress={handleTogglePassword} pr="$3" bg="$gray700">
+            <InputIcon
+              as={showPassword ? Eye : EyeOff}
+              size="lg"
+              color="$gray300"
+            />
+          </InputSlot>
+        )}
+        <InputSlot onPress={handleClearInput} pr="$4" bg="$gray700">
+          <InputIcon as={X} size="lg" color="$gray300" />
+        </InputSlot>
       </GluestackInput>
 
       <FormControlError>

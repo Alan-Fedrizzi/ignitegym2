@@ -51,6 +51,12 @@ export function SignUp() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormDataProps>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      passwordConfirm: "",
+    },
     resolver: yupResolver(signUpSchema),
   });
   // sem yup:
@@ -192,7 +198,9 @@ export function SignUp() {
               render={({ field: { value, onChange } }) => (
                 <Input
                   placeholder="Senha"
-                  secureTextEntry
+                  // secureTextEntry
+                  // alterei para ter o ícone de mostrar/esconder senha
+                  isPassword
                   value={value}
                   onChangeText={onChange}
                   errorMessage={errors.password?.message}
@@ -206,7 +214,9 @@ export function SignUp() {
               render={({ field: { value, onChange } }) => (
                 <Input
                   placeholder="Confirme a Senha"
-                  secureTextEntry
+                  // secureTextEntry
+                  // alterei para ter o ícone de mostrar/esconder senha
+                  isPassword
                   value={value}
                   onChangeText={onChange}
                   // para o usuário pode enviar direto, sem ter que fechar o teclado e pressionar o button
