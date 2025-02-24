@@ -11,11 +11,12 @@ import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { config } from "./config/gluestack-ui.config";
 
 import { Routes } from "@routes/index";
+import { AuthContext, AuthContextProvider } from "@contexts/AuthContext";
 import { Loading } from "@components/Loading";
 
 export default function App() {
   // useFonts retorna um array, na primeira posição um boolean
-  const [fonstLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold });
+  const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold });
 
   return (
     // GluestackUIProvider fornece os componentes para a aplicação
@@ -27,7 +28,24 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      {fonstLoaded ? <Routes /> : <Loading />}
+      {/* vamos envolver tudo no nosso contexto */}
+      {/* temos que passar o valor do contexto */}
+      <AuthContextProvider>
+        {fontsLoaded ? <Routes /> : <Loading />}
+      </AuthContextProvider>
+
+      {/* <AuthContext.Provider
+        value={{
+          user: {
+            id: "1",
+            name: "Rodrigo",
+            email: "rodrigo@email.com",
+            avatar: "rodrigo.png",
+          },
+        }}
+      >
+        {fontsLoaded ? <Routes /> : <Loading />}
+      </AuthContext.Provider> */}
     </GluestackUIProvider>
   );
 }
@@ -48,6 +66,6 @@ export default function App() {
 // test@test.com
 // 123456
 
-// 3 http client
-// utlizando axios
-// obs: sobre a aplicação tem a apllicação inicial desse módulo
+// 4 contextos
+//´criando seu prórpio hook
+// obs: sobre a aplicação tem a aplicação inicial desse módulo

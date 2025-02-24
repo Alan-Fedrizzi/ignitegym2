@@ -1,3 +1,4 @@
+// import { Alert } from "react-native";
 // import { useState } from "react";
 import {
   Center,
@@ -6,17 +7,24 @@ import {
   Text,
   VStack,
   ScrollView,
+  useToast,
+  Toast,
+  ToastTitle,
 } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+// import axios from "axios";
+import { api } from "@services/api";
+
 import BackgroundImg from "@assets/background.png";
 import Logo from "@assets/logo.svg";
 
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { AppError } from "@utils/AppError";
 
 type FormDataProps = {
   name: string;
@@ -45,6 +53,8 @@ export function SignUp() {
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
   // const [passwordConfirm, setPasswordConfirm] = useState("");
+
+  const toast = useToast();
 
   const {
     control,
@@ -80,6 +90,37 @@ export function SignUp() {
     navigation.goBack();
   }
 
+  async function handleSignUp(
+    formData: Omit<FormDataProps, "passwordConfirm">
+  ) {
+    try {
+      // com axios, não precisa do JSON.stringify
+      // nem do .json()
+      const response = await api.post("/users", formData);
+      console.log(response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      // se for é um erro tratado
+      const title = isAppError
+        ? error.message
+        : "Não foi possível criar a conta. Tente novamente mais tarde.";
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <Toast action="error" variant="outline">
+            <ToastTitle>{title}</ToastTitle>
+          </Toast>
+        ),
+      });
+
+      // if (axios.isAxiosError(error)) {
+      //   Alert.alert(error.response?.data.message);
+      // }
+    }
+  }
+
+  /*
   // sem axios
   async function handleSignUp(
     formData: Omit<FormDataProps, "passwordConfirm">
@@ -96,6 +137,8 @@ export function SignUp() {
     const data = await response.json();
     console.log(data);
   }
+  */
+
   /*
   // sem async / await
   function handleSignUp(data: Omit<FormDataProps, "passwordConfirm">) {
