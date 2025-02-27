@@ -5,6 +5,9 @@ import {
   Text,
   VStack,
   ScrollView,
+  useToast,
+  Toast,
+  ToastTitle,
 } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form";
@@ -18,6 +21,9 @@ import Logo from "@assets/logo.svg";
 
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { useAuth } from "@hooks/useAuth";
+import { AppError } from "@utils/AppError";
+import { useState } from "react";
 
 type FormDataProps = {
   email: string;
@@ -33,8 +39,10 @@ const signInSchema = yup.object().shape({
 });
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
-
+  const { signIn } = useAuth();
+  const toast = useToast();
   const {
     control,
     handleSubmit,
@@ -47,8 +55,32 @@ export function SignIn() {
     resolver: yupResolver(signInSchema),
   });
 
-  function handleSignIn(data: FormDataProps) {
-    console.log(data);
+  // signIn é async, então, handleSignIn tb...
+  async function handleSignIn(data: FormDataProps) {
+    try {
+      setIsLoading(true);
+      // console.log(data);
+      const { email, password } = data;
+      await signIn(email, password);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      // se for é um erro tratado
+      const title = isAppError
+        ? error.message
+        : "Não foi possível entrar. Tente novamente mais tarde.";
+
+      // se deu bom, vai para outra rota, por isso o setIsLoading não está no finally
+      setIsLoading(false);
+
+      toast.show({
+        placement: "top",
+        render: () => (
+          <Toast action="error" variant="outline">
+            <ToastTitle>{title}</ToastTitle>
+          </Toast>
+        ),
+      });
+    }
   }
 
   function handleNewAccount() {
@@ -115,7 +147,11 @@ export function SignIn() {
               )}
             />
 
-            <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
+            <Button
+              title="Acessar"
+              onPress={handleSubmit(handleSignIn)}
+              isLoading={isLoading}
+            />
           </Center>
 
           <Center flex={1} justifyContent="flex-end" mt="$4">

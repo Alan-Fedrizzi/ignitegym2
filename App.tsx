@@ -64,8 +64,9 @@ export default function App() {
 // na esquerda, clica com o botão direito do mouse > view data
 
 // test@test.com
+// email@email.com
 // 123456
 
 // 4 contextos
-//´criando seu prórpio hook
+// criando metodo signout
 // obs: sobre a aplicação tem a aplicação inicial desse módulo
