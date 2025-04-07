@@ -18,10 +18,10 @@ export function Routes() {
   // const contextData = useContext(AuthContext);
   // console.log("usuário logado =>", contextData);
   // criamos nosso hook
-  const { user, isLoadingUserStorage } = useAuth();
+  const { user, isLoadingUserStorageData } = useAuth();
   // console.log("usuário logado =>", user);
 
-  if (isLoadingUserStorage) {
+  if (isLoadingUserStorageData) {
     return <Loading />;
   }
 

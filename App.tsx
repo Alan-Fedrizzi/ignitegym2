@@ -65,8 +65,9 @@ export default function App() {
 
 // test@test.com
 // email@email.com
+// aiai@email.com
 // 123456
 
-// 4 contextos
-// criando metodo signout
+// 5 autenticação JWT
+// recuperando o token do storage
 // obs: sobre a aplicação tem a aplicação inicial desse módulo

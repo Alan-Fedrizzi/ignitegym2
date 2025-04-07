@@ -1,13 +1,19 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { api } from "@services/api";
 import { UserDTO } from "@dtos/UserDTO";
-import { storageUserSave, storageUserGet } from "@storage/storageUser";
+import {
+  storageUserSave,
+  storageUserGet,
+  storageUserRemove,
+} from "@storage/storageUser";
+import { storageAuthTokenSave } from "@storage/storageAuthToken";
 
 export type AuthContextDataProps = {
   user: UserDTO;
   // como signIn puxa dados da api, é async, ou seja, retorna uma promisse
   signIn: (email: string, password: string) => Promise<void>;
-  isLoadingUserStorage: boolean;
+  signOut: () => Promise<void>;
+  isLoadingUserStorageData: boolean;
 };
 
 type AuthContextProviderProps = {
@@ -25,8 +31,9 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   // se mudar, muda em todo app
   // inicia como um objeto vazio
   const [user, setUser] = useState<UserDTO>({} as UserDTO);
-  // isLoadingUserStorage começa com true pois inicia caregando os dados
-  const [isLoadingUserStorage, setIsLoadingUserStorage] = useState(true);
+  // isLoadingUserStorageData começa com true pois inicia caregando os dados
+  const [isLoadingUserStorageData, setIsLoadingUserStorageData] =
+    useState(true);
 
   async function loadUserData() {
     try {
@@ -39,7 +46,23 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       // não queremos lidar com erro aqui, vamos lançar pra frente, para quem chamou essa function
       throw error;
     } finally {
-      setIsLoadingUserStorage(false);
+      setIsLoadingUserStorageData(false);
+    }
+  }
+
+  async function storageUserAndToken(userData: UserDTO, token: string) {
+    try {
+      setIsLoadingUserStorageData(true);
+
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      await storageUserSave(userData);
+      await storageAuthTokenSave(token);
+      setUser(userData);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoadingUserStorageData(false);
     }
   }
 
@@ -47,9 +70,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     try {
       const { data } = await api.post("/sessions", { email, password });
 
-      if (data.user) {
-        setUser(data.user);
-        storageUserSave(data.user);
+      if (data.user && data.token) {
+        storageUserAndToken(data.user, data.token);
       }
     } catch (error) {
       // não queremos lidar com erro aqui, vamos lançar pra frente, para quem chamou essa function
@@ -64,13 +86,28 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     // });
   }
 
+  async function signOut() {
+    try {
+      setIsLoadingUserStorageData(true);
+      setUser({} as UserDTO);
+
+      await storageUserRemove();
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoadingUserStorageData(false);
+    }
+  }
+
   // para carregar usuário no carregamento inicial
   useEffect(() => {
     loadUserData();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, signIn, isLoadingUserStorage }}>
+    <AuthContext.Provider
+      value={{ user, signIn, signOut, isLoadingUserStorageData }}
+    >
       {children}
     </AuthContext.Provider>
   );

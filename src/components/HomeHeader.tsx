@@ -4,9 +4,10 @@ import { LogOut } from "lucide-react-native";
 import { UserPhoto } from "./UserPhoto";
 import { useAuth } from "@hooks/useAuth";
 import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
+import { TouchableOpacity } from "react-native";
 
 export function HomeHeader() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   return (
     <HStack bg="$gray600" pt="$16" pb="$5" px="$8" alignItems="center" gap="$4">
@@ -31,7 +32,9 @@ export function HomeHeader() {
       {/* não funciona, não reconhece nossas cores
       <LogOut color='$gray200' />
       temos que usar em conjunto com o Icon o gs */}
-      <Icon as={LogOut} color="$gray200" size="xl" />
+      <TouchableOpacity onPress={signOut}>
+        <Icon as={LogOut} color="$gray200" size="xl" />
+      </TouchableOpacity>
     </HStack>
   );
 }

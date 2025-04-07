@@ -1,5 +1,5 @@
+import { useState } from "react";
 // import { Alert } from "react-native";
-// import { useState } from "react";
 import {
   Center,
   Heading,
@@ -22,6 +22,7 @@ import { api } from "@services/api";
 import BackgroundImg from "@assets/background.png";
 import Logo from "@assets/logo.svg";
 
+import { useAuth } from "@hooks/useAuth";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { AppError } from "@utils/AppError";
@@ -53,8 +54,10 @@ export function SignUp() {
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
   // const [passwordConfirm, setPasswordConfirm] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
+
+  const { signIn } = useAuth();
 
   const {
     control,
@@ -94,11 +97,18 @@ export function SignUp() {
     formData: Omit<FormDataProps, "passwordConfirm">
   ) {
     try {
+      setIsLoading(true);
+      await api.post("/users", formData);
+      const { email, password } = formData;
+      await signIn(email, password);
+
       // com axios, não precisa do JSON.stringify
       // nem do .json()
-      const response = await api.post("/users", formData);
-      console.log(response.data);
+      // const response = await api.post("/users", formData);
+      // console.log(response.data);
     } catch (error) {
+      setIsLoading(false);
+
       const isAppError = error instanceof AppError;
       // se for é um erro tratado
       const title = isAppError
@@ -273,6 +283,7 @@ export function SignUp() {
             <Button
               title="Criar e acessar"
               onPress={handleSubmit(handleSignUp)}
+              isLoading={isLoading}
             />
 
             {/* sem react-hook-form: */}
