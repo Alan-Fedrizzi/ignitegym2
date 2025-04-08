@@ -6,7 +6,11 @@ import {
   storageUserGet,
   storageUserRemove,
 } from "@storage/storageUser";
-import { storageAuthTokenSave } from "@storage/storageAuthToken";
+import {
+  storageAuthTokenSave,
+  storageAuthTokenGet,
+  storageAuthTokenRemove,
+} from "@storage/storageAuthToken";
 
 export type AuthContextDataProps = {
   user: UserDTO;
@@ -35,31 +39,37 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] =
     useState(true);
 
-  async function loadUserData() {
-    try {
-      const loggedUser = await storageUserGet();
+  async function userAndTokenUpdate(userData: UserDTO, token: string) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      if (loggedUser) {
-        setUser(loggedUser);
-      }
+    setUser(userData);
+  }
+
+  async function storageUserAndTokenSave(userData: UserDTO, token: string) {
+    try {
+      setIsLoadingUserStorageData(true);
+
+      await storageUserSave(userData);
+      await storageAuthTokenSave(token);
     } catch (error) {
-      // não queremos lidar com erro aqui, vamos lançar pra frente, para quem chamou essa function
       throw error;
     } finally {
       setIsLoadingUserStorageData(false);
     }
   }
 
-  async function storageUserAndToken(userData: UserDTO, token: string) {
+  async function loadUserData() {
     try {
       setIsLoadingUserStorageData(true);
 
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      const loggedUser = await storageUserGet();
+      const token = await storageAuthTokenGet();
 
-      await storageUserSave(userData);
-      await storageAuthTokenSave(token);
-      setUser(userData);
+      if (token && loggedUser) {
+        userAndTokenUpdate(loggedUser, token);
+      }
     } catch (error) {
+      // não queremos lidar com erro aqui, vamos lançar pra frente, para quem chamou essa function
       throw error;
     } finally {
       setIsLoadingUserStorageData(false);
@@ -71,7 +81,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       const { data } = await api.post("/sessions", { email, password });
 
       if (data.user && data.token) {
-        storageUserAndToken(data.user, data.token);
+        await storageUserAndTokenSave(data.user, data.token);
+        userAndTokenUpdate(data.user, data.token);
       }
     } catch (error) {
       // não queremos lidar com erro aqui, vamos lançar pra frente, para quem chamou essa function
@@ -92,6 +103,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       setUser({} as UserDTO);
 
       await storageUserRemove();
+      await storageAuthTokenRemove();
     } catch (error) {
       throw error;
     } finally {

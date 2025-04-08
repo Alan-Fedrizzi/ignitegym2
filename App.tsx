@@ -68,6 +68,6 @@ export default function App() {
 // aiai@email.com
 // 123456
 
-// 5 autenticação JWT
-// recuperando o token do storage
+// 6 consumindo o back-end
+// início...
 // obs: sobre a aplicação tem a aplicação inicial desse módulo
