@@ -69,5 +69,5 @@ export default function App() {
 // 123456
 
 // 6 consumindo o back-end
-// exibindo exercícios por grupo
+// carregando histórico
 // obs: sobre a aplicação tem a aplicação inicial desse módulo

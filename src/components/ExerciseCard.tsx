@@ -9,9 +9,16 @@ import {
 } from "@gluestack-ui/themed";
 import { ChevronRight } from "lucide-react-native";
 
-type Props = TouchableOpacityProps & {};
+import { api } from "@services/api";
+import { ExerciseDTO } from "@dtos/ExerciseDTO";
 
-export function ExerciseCard({ ...props }: Props) {
+type Props = TouchableOpacityProps & {
+  data: ExerciseDTO;
+};
+
+export function ExerciseCard({ data, ...props }: Props) {
+  const { name, series, repetitions, thumb } = data;
+
   return (
     <TouchableOpacity {...props}>
       <HStack
@@ -24,7 +31,7 @@ export function ExerciseCard({ ...props }: Props) {
       >
         <Image
           source={{
-            uri: "https://static.wixstatic.com/media/2edbed_60c206e178ad4eb3801f4f47fc6523df~mv2.webp/v1/fill/w_350,h_375,al_c/2edbed_60c206e178ad4eb3801f4f47fc6523df~mv2.webp",
+            uri: `${api.defaults.baseURL}/exercise/thumb/${thumb}`,
           }}
           alt="Imagem do exercício"
           w="$16"
@@ -36,11 +43,11 @@ export function ExerciseCard({ ...props }: Props) {
 
         <VStack flex={1}>
           <Heading fontSize="$lg" color="$white" fontFamily="$heading">
-            Puxada frontal
+            {name}
           </Heading>
           <Text fontSize="$sm" color="$gray200" mt="$1" numberOfLines={2}>
-            {/* numberOfLines={2} coloca ... qd passa de 2 linhas */}3 séries x
-            12 repetições
+            {/* numberOfLines={2} coloca ... qd passa de 2 linhas */}
+            {series} séries x {repetitions} repetições
           </Text>
         </VStack>
 
