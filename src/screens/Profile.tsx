@@ -3,12 +3,23 @@ import { Center, VStack, Text, Heading, useToast } from "@gluestack-ui/themed";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
+import { Controller, useForm } from "react-hook-form";
+
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useState } from "react";
 import { ToastMessage } from "@components/ToastMessage";
+import { useAuth } from "@hooks/useAuth";
+
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  oldPassword: string;
+  confirmPassword: string;
+};
 
 export function Profile() {
   const [userPhoto, setUserPhoto] = useState(
@@ -16,6 +27,13 @@ export function Profile() {
   );
 
   const toast = useToast();
+  const { user } = useAuth();
+  const { control, handleSubmit } = useForm<FormDataProps>({
+    defaultValues: {
+      name: user.name,
+      email: user.email,
+    },
+  });
 
   async function handleUserPhotoSelect() {
     try {
@@ -71,6 +89,10 @@ export function Profile() {
     }
   }
 
+  async function handleProfileUpdate(data: FormDataProps) {
+    console.log(data);
+  }
+
   return (
     <VStack flex={1}>
       <ScreenHeader title="Perfil" />
@@ -96,8 +118,29 @@ export function Profile() {
           </TouchableOpacity>
 
           <Center w="$full" gap="$4">
-            <Input value="Nome" bg="$gray600" isReadOnly />
-            <Input value="email@email.com" bg="$gray600" isReadOnly />
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { value, onChange } }) => (
+                <Input
+                  placeholder="Nome"
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { value, onChange } }) => (
+                <Input
+                  isReadOnly
+                  placeholder="E-mail"
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
+            />
           </Center>
 
           <Heading
@@ -112,15 +155,44 @@ export function Profile() {
           </Heading>
 
           <Center w="$full" gap="$4">
-            <Input placeholder="Senha antiga" bg="$gray600" secureTextEntry />
-            <Input placeholder="Nova senha" bg="$gray600" secureTextEntry />
-            <Input
-              placeholder="Confirme a nova senha"
-              bg="$gray600"
-              secureTextEntry
+            <Controller
+              control={control}
+              name="oldPassword"
+              render={({ field: { onChange } }) => (
+                <Input
+                  placeholder="Senha antiga"
+                  secureTextEntry
+                  onChangeText={onChange}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange } }) => (
+                <Input
+                  placeholder="Nova senha"
+                  secureTextEntry
+                  onChangeText={onChange}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({ field: { onChange } }) => (
+                <Input
+                  placeholder="Confirme a nova senha"
+                  secureTextEntry
+                  onChangeText={onChange}
+                />
+              )}
             />
 
-            <Button title="Atualizar" />
+            <Button
+              title="Atualizar"
+              onPress={handleSubmit(handleProfileUpdate)}
+            />
           </Center>
         </Center>
       </ScrollView>

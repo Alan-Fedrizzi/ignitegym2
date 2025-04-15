@@ -69,5 +69,5 @@ export default function App() {
 // 123456
 
 // 6 consumindo o back-end
-// carregando histórico
+// preparando a validação do formulário
 // obs: sobre a aplicação tem a aplicação inicial desse módulo
