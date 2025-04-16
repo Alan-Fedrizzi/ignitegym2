@@ -1,15 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { FlatList } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import {
-  Heading,
-  HStack,
-  Text,
-  VStack,
-  useToast,
-  Toast,
-  ToastTitle,
-} from "@gluestack-ui/themed";
+import { Heading, HStack, Text, VStack, useToast } from "@gluestack-ui/themed";
 
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
@@ -19,6 +11,7 @@ import { Group } from "@components/Group";
 import { ExerciseCard } from "@components/ExerciseCard";
 import { ExerciseDTO } from "@dtos/ExerciseDTO";
 import { Loading } from "@components/Loading";
+import { ToastMessage } from "@components/ToastMessage";
 
 export function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -49,10 +42,13 @@ export function Home() {
 
       toast.show({
         placement: "top",
-        render: () => (
-          <Toast action="error" variant="outline">
-            <ToastTitle>{title}</ToastTitle>
-          </Toast>
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title={title}
+            action="error"
+            onClose={() => toast.close(id)}
+          />
         ),
       });
     }
@@ -74,10 +70,13 @@ export function Home() {
 
       toast.show({
         placement: "top",
-        render: () => (
-          <Toast action="error" variant="outline">
-            <ToastTitle>{title}</ToastTitle>
-          </Toast>
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title={title}
+            action="error"
+            onClose={() => toast.close(id)}
+          />
         ),
       });
     } finally {

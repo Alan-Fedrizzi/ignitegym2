@@ -25,7 +25,7 @@ export function ToastMessage({
 }: Props) {
   return (
     <Toast
-      nativeID={`tost-$ìd`}
+      nativeID={`tost-${id}`}
       action={action}
       bgColor={action === "success" ? "$green500" : "$red500"}
       mt="$10"

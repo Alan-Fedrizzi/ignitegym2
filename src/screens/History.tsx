@@ -1,14 +1,7 @@
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { SectionList } from "react-native";
-import {
-  Heading,
-  VStack,
-  Text,
-  useToast,
-  Toast,
-  ToastTitle,
-} from "@gluestack-ui/themed";
+import { Heading, VStack, Text, useToast } from "@gluestack-ui/themed";
 
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
@@ -16,6 +9,7 @@ import { ScreenHeader } from "@components/ScreenHeader";
 import { HistoryCard } from "@components/HistoryCard";
 import { HistoryByDayDTO } from "@dtos/HistoryByDayDTO";
 import { Loading } from "@components/Loading";
+import { ToastMessage } from "@components/ToastMessage";
 
 export function History() {
   const [isLoading, setIsLoading] = useState(true);
@@ -38,10 +32,13 @@ export function History() {
 
       toast.show({
         placement: "top",
-        render: () => (
-          <Toast action="error" variant="outline">
-            <ToastTitle>{title}</ToastTitle>
-          </Toast>
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title={title}
+            action="error"
+            onClose={() => toast.close(id)}
+          />
         ),
       });
     } finally {

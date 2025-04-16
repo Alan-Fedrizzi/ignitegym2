@@ -16,6 +16,7 @@ type Props = ComponentProps<typeof InputField> & {
   errorMessage?: string | null;
   isInvalid?: boolean;
   isPassword?: boolean;
+  alternateStyle?: boolean;
 };
 
 export function Input({
@@ -23,11 +24,13 @@ export function Input({
   errorMessage = null,
   isInvalid = false,
   isPassword = false,
+  alternateStyle = false,
   onChangeText,
   ...rest
 }: Props) {
   const invalid = !!errorMessage || isInvalid;
   const [showPassword, setShowPassword] = useState(false);
+  const background = alternateStyle ? "$gray600" : "$gray700";
 
   function handleClearInput() {
     if (onChangeText) onChangeText("");
@@ -57,7 +60,7 @@ export function Input({
         opacity={isReadOnly ? 0.5 : 1}
       >
         <InputField
-          bg="$gray700"
+          bg={background}
           color="$white"
           px="$4"
           fontFamily="$body"
@@ -67,7 +70,7 @@ export function Input({
           {...rest}
         />
         {isPassword && (
-          <InputSlot onPress={handleTogglePassword} pr="$3" bg="$gray700">
+          <InputSlot onPress={handleTogglePassword} pr="$3" bg={background}>
             <InputIcon
               as={showPassword ? Eye : EyeOff}
               size="lg"
@@ -75,7 +78,7 @@ export function Input({
             />
           </InputSlot>
         )}
-        <InputSlot onPress={handleClearInput} pr="$4" bg="$gray700">
+        <InputSlot onPress={handleClearInput} pr="$4" bg={background}>
           <InputIcon as={X} size="lg" color="$gray300" />
         </InputSlot>
       </GluestackInput>

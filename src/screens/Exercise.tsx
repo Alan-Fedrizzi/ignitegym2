@@ -9,8 +9,6 @@ import {
   Image,
   Box,
   useToast,
-  Toast,
-  ToastTitle,
 } from "@gluestack-ui/themed";
 import { ScrollView, TouchableOpacity } from "react-native";
 import { ArrowLeft } from "lucide-react-native";
@@ -24,6 +22,7 @@ import { ExerciseDTO } from "@dtos/ExerciseDTO";
 import BodySvg from "@assets/body.svg";
 import SeriesSvg from "@assets/series.svg";
 import RepetitionsSvg from "@assets/repetitions.svg";
+import { ToastMessage } from "@components/ToastMessage";
 
 type RoutesParamsProps = {
   exerciseId: string;
@@ -59,10 +58,13 @@ export function Exercise() {
 
       toast.show({
         placement: "top",
-        render: () => (
-          <Toast action="error" variant="outline">
-            <ToastTitle>{title}</ToastTitle>
-          </Toast>
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title={title}
+            action="error"
+            onClose={() => toast.close(id)}
+          />
         ),
       });
     } finally {
@@ -77,12 +79,13 @@ export function Exercise() {
 
       toast.show({
         placement: "top",
-        render: () => (
-          <Toast action="success" variant="outline">
-            <ToastTitle>
-              Parabéns! Exercício registrado no seu histórico.
-            </ToastTitle>
-          </Toast>
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title="Parabéns! Exercício registrado no seu histórico."
+            action="success"
+            onClose={() => toast.close(id)}
+          />
         ),
       });
 
@@ -96,10 +99,13 @@ export function Exercise() {
 
       toast.show({
         placement: "top",
-        render: () => (
-          <Toast action="error" variant="outline">
-            <ToastTitle>{title}</ToastTitle>
-          </Toast>
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title={title}
+            action="error"
+            onClose={() => toast.close(id)}
+          />
         ),
       });
     } finally {

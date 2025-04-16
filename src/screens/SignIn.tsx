@@ -6,8 +6,6 @@ import {
   VStack,
   ScrollView,
   useToast,
-  Toast,
-  ToastTitle,
 } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { useForm, Controller } from "react-hook-form";
@@ -24,6 +22,7 @@ import { Button } from "@components/Button";
 import { useAuth } from "@hooks/useAuth";
 import { AppError } from "@utils/AppError";
 import { useState } from "react";
+import { ToastMessage } from "@components/ToastMessage";
 
 type FormDataProps = {
   email: string;
@@ -74,10 +73,13 @@ export function SignIn() {
 
       toast.show({
         placement: "top",
-        render: () => (
-          <Toast action="error" variant="outline">
-            <ToastTitle>{title}</ToastTitle>
-          </Toast>
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title={title}
+            action="error"
+            onClose={() => toast.close(id)}
+          />
         ),
       });
     }

@@ -124,6 +124,7 @@ export function Profile() {
               render={({ field: { value, onChange } }) => (
                 <Input
                   placeholder="Nome"
+                  alternateStyle
                   value={value}
                   onChangeText={onChange}
                 />
@@ -136,6 +137,9 @@ export function Profile() {
                 <Input
                   isReadOnly
                   placeholder="E-mail"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  alternateStyle
                   value={value}
                   onChangeText={onChange}
                 />
@@ -161,7 +165,8 @@ export function Profile() {
               render={({ field: { onChange } }) => (
                 <Input
                   placeholder="Senha antiga"
-                  secureTextEntry
+                  isPassword
+                  alternateStyle
                   onChangeText={onChange}
                 />
               )}
@@ -172,7 +177,8 @@ export function Profile() {
               render={({ field: { onChange } }) => (
                 <Input
                   placeholder="Nova senha"
-                  secureTextEntry
+                  isPassword
+                  alternateStyle
                   onChangeText={onChange}
                 />
               )}
@@ -183,7 +189,8 @@ export function Profile() {
               render={({ field: { onChange } }) => (
                 <Input
                   placeholder="Confirme a nova senha"
-                  secureTextEntry
+                  isPassword
+                  alternateStyle
                   onChangeText={onChange}
                 />
               )}
