@@ -4,6 +4,8 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
@@ -13,13 +15,38 @@ import { useState } from "react";
 import { ToastMessage } from "@components/ToastMessage";
 import { useAuth } from "@hooks/useAuth";
 
-type FormDataProps = {
-  name: string;
-  email: string;
-  password: string;
-  oldPassword: string;
-  confirmPassword: string;
-};
+// type FormDataProps = {
+//   name: string;
+//   email: string;
+//   password: string;
+//   oldPassword: string;
+//   confirmPassword: string;
+// };
+type FormDataProps = yup.InferType<typeof profileSchema>;
+
+const profileSchema = yup.object().shape({
+  name: yup.string().required("Informe o nome."),
+  email: yup.string(),
+  oldPassword: yup
+    .string()
+    .nullable()
+    .transform((value) => (!!value ? value : null)),
+  password: yup
+    .string()
+    .min(6, "A senha deve ter pelo menos 6 dígitos.")
+    .nullable()
+    .transform((value) => (!!value ? value : null)),
+  confirmPassword: yup
+    .string()
+    .nullable()
+    .transform((value) => (!!value ? value : null))
+    .oneOf([yup.ref("password"), null], "A confirmação de senha não confere.")
+    .when("password", {
+      is: (val: any) => !!val,
+      then: (schema) => schema.required("Informe a confirmação da senha."),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+});
 
 export function Profile() {
   const [userPhoto, setUserPhoto] = useState(
@@ -28,11 +55,16 @@ export function Profile() {
 
   const toast = useToast();
   const { user } = useAuth();
-  const { control, handleSubmit } = useForm<FormDataProps>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
     defaultValues: {
       name: user.name,
       email: user.email,
     },
+    resolver: yupResolver(profileSchema),
   });
 
   async function handleUserPhotoSelect() {
@@ -127,6 +159,7 @@ export function Profile() {
                   alternateStyle
                   value={value}
                   onChangeText={onChange}
+                  errorMessage={errors.name?.message}
                 />
               )}
             />
@@ -180,6 +213,7 @@ export function Profile() {
                   isPassword
                   alternateStyle
                   onChangeText={onChange}
+                  errorMessage={errors.password?.message}
                 />
               )}
             />
@@ -192,6 +226,7 @@ export function Profile() {
                   isPassword
                   alternateStyle
                   onChangeText={onChange}
+                  errorMessage={errors.confirmPassword?.message}
                 />
               )}
             />
