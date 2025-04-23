@@ -7,6 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+import { api } from "@services/api";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { UserPhoto } from "@components/UserPhoto";
 import { Input } from "@components/Input";
@@ -14,6 +15,7 @@ import { Button } from "@components/Button";
 import { useState } from "react";
 import { ToastMessage } from "@components/ToastMessage";
 import { useAuth } from "@hooks/useAuth";
+import { AppError } from "@utils/AppError";
 
 // type FormDataProps = {
 //   name: string;
@@ -49,12 +51,13 @@ const profileSchema = yup.object().shape({
 });
 
 export function Profile() {
+  const [isUpdating, setIsUpdating] = useState(false);
   const [userPhoto, setUserPhoto] = useState(
     "https://github.com/Alan-Fedrizzi.png"
   );
 
   const toast = useToast();
-  const { user } = useAuth();
+  const { user, updateUserProfile } = useAuth();
   const {
     control,
     handleSubmit,
@@ -92,7 +95,7 @@ export function Profile() {
         size: number;
         // para dizer que dentro vai ter um size que é number
       };
-      console.log(photoInfo.size);
+      // console.log(photoInfo.size);
 
       const isBiggerThanFiveMb = photoInfo.size / 1024 / 1024 > 5;
 
@@ -115,14 +118,73 @@ export function Profile() {
         // );
       }
 
-      setUserPhoto(photoUri);
+      // setUserPhoto(photoUri);
+      // vamos mandar para o backend
+      const fileExtension = photoUri.split(".").pop();
+      // console.log(fileExtension);
+      const photoFile = {
+        name: `${user.name.replaceAll(
+          " ",
+          "_"
+        )}.${fileExtension}`.toLowerCase(),
+        uri: photoUri,
+        type: `${photoSelected.assets[0].type}/${fileExtension}`,
+      };
+      console.log(photoFile);
     } catch (error) {
       console.log(error);
     }
   }
 
   async function handleProfileUpdate(data: FormDataProps) {
-    console.log(data);
+    const updatedData = {
+      name: data.name,
+      password: data.password,
+      old_password: data.oldPassword,
+    };
+
+    try {
+      setIsUpdating(true);
+
+      await api.put("/users", updatedData);
+
+      const updatedUser = user;
+      updatedUser.name = data.name;
+      await updateUserProfile(updatedUser);
+      console.log(updatedUser);
+
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title="Perfil atualizado com sucesso!"
+            action="success"
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Não foi possível atualizar o perfil. Tente novamente mais tarde.";
+
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title={title}
+            action="error"
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   }
 
   return (
@@ -234,6 +296,7 @@ export function Profile() {
             <Button
               title="Atualizar"
               onPress={handleSubmit(handleProfileUpdate)}
+              isLoading={isUpdating}
             />
           </Center>
         </Center>

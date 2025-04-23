@@ -63,11 +63,14 @@ export default function App() {
 // connect
 // na esquerda, clica com o botão direito do mouse > view data
 
+// email@email.com - 123123
 // test@test.com
-// email@email.com
 // aiai@email.com
 // 123456
 
-// 6 consumindo o back-end
-// Atualização usuário no ...
+// 7 upload da imagem
+// fazendo upload da imagem
 // obs: sobre a aplicação tem a aplicação inicial desse módulo
+
+// como colocar fotos no simulador...
+// component library - 6 galeria de fotos - acessando album de fotos
