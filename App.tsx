@@ -52,7 +52,7 @@ export default function App() {
 
 // API
 // cd api
-// npm start
+// npm start ou npm run dev (atualiza automático qd tem alterações no backend, no código do backend)
 // roda na porta 3333
 // documentação:
 // http://localhost:3333/api-docs/
@@ -68,8 +68,8 @@ export default function App() {
 // aiai@email.com
 // 123456
 
-// 7 upload da imagem
-// fazendo upload da imagem
+// 8 refresh token
+// ...
 // obs: sobre a aplicação tem a aplicação inicial desse módulo
 
 // como colocar fotos no simulador...

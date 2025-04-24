@@ -16,6 +16,7 @@ import { useState } from "react";
 import { ToastMessage } from "@components/ToastMessage";
 import { useAuth } from "@hooks/useAuth";
 import { AppError } from "@utils/AppError";
+import defaultUserPhotoImg from "@assets/userPhotoDefault.png";
 
 // type FormDataProps = {
 //   name: string;
@@ -52,9 +53,9 @@ const profileSchema = yup.object().shape({
 
 export function Profile() {
   const [isUpdating, setIsUpdating] = useState(false);
-  const [userPhoto, setUserPhoto] = useState(
-    "https://github.com/Alan-Fedrizzi.png"
-  );
+  // const [userPhoto, setUserPhoto] = useState(
+  //   "https://github.com/Alan-Fedrizzi.png"
+  // );
 
   const toast = useToast();
   const { user, updateUserProfile } = useAuth();
@@ -129,8 +130,40 @@ export function Profile() {
         )}.${fileExtension}`.toLowerCase(),
         uri: photoUri,
         type: `${photoSelected.assets[0].type}/${fileExtension}`,
-      };
-      console.log(photoFile);
+      } as any; // as any para poder fazer o append abaixo
+
+      // como temos que mandar um arquivo pro backend, precisamos criar um formulário (para o avatar)
+      const userPhotoUploadForm = new FormData();
+      userPhotoUploadForm.append("avatar", photoFile);
+
+      const updatedAvatarResponse = await api.patch(
+        "/users/avatar",
+        userPhotoUploadForm,
+        {
+          // não é mais json que queremos enviar:
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      // para atualizar a foto, precisamos do nome da foto salva no backend, com a hash
+      // vamos criar uma const, para atualizar somente o que queremos do user
+      const updatedUser = user;
+      updatedUser.avatar = updatedAvatarResponse.data.avatar;
+      updateUserProfile(updatedUser);
+
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id="id"
+            title="Foto atualizada com sucesso!"
+            action="success"
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
     } catch (error) {
       console.log(error);
     }
@@ -151,7 +184,7 @@ export function Profile() {
       const updatedUser = user;
       updatedUser.name = data.name;
       await updateUserProfile(updatedUser);
-      console.log(updatedUser);
+      // console.log(updatedUser);
 
       toast.show({
         placement: "top",
@@ -194,7 +227,12 @@ export function Profile() {
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt="$6" px="$10">
           <UserPhoto
-            source={{ uri: userPhoto }}
+            // source={{ uri: userPhoto }}
+            source={
+              user.avatar
+                ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+                : defaultUserPhotoImg
+            }
             size="xl"
             alt="Foto do usuário"
           />
