@@ -54,7 +54,7 @@ export function Exercise() {
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
-        : "Não foi carregar os detalhes do exercícios.";
+        : "Não foi possível carregar os detalhes do exercícios.";
 
       toast.show({
         placement: "top",
@@ -95,7 +95,7 @@ export function Exercise() {
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
-        : "Não foi registrar o exercícios.";
+        : "Não foi possível registrar o exercícios.";
 
       toast.show({
         placement: "top",

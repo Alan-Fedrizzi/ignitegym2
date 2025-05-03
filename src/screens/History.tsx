@@ -28,7 +28,7 @@ export function History() {
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
-        : "Não foi carregar o histórico.";
+        : "Não foi possível carregar o histórico.";
 
       toast.show({
         placement: "top",

@@ -69,7 +69,7 @@ export default function App() {
 // 123456
 
 // 8 refresh token
-// loading no carregamento do...
+// variação de refresh token
 // obs: sobre a aplicação tem a aplicação inicial desse módulo
 
 // como colocar fotos no simulador...

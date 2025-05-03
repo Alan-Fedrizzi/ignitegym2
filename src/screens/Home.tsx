@@ -38,7 +38,7 @@ export function Home() {
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
-        : "Não foi carregar os grupos musculares.";
+        : "Não foi possível carregar os grupos musculares.";
 
       toast.show({
         placement: "top",
@@ -66,7 +66,7 @@ export function Home() {
       const isAppError = error instanceof AppError;
       const title = isAppError
         ? error.message
-        : "Não foi carregar os exercícios.";
+        : "Não foi possível carregar os exercícios.";
 
       toast.show({
         placement: "top",
