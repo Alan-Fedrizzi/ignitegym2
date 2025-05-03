@@ -1,8 +1,16 @@
-import { storageAuthTokenGet } from "@storage/storageAuthToken";
+import axios, { AxiosInstance, AxiosError } from "axios";
 import { AppError } from "@utils/AppError";
-import axios, { AxiosInstance } from "axios";
+import {
+  storageAuthTokenGet,
+  storageAuthTokenSave,
+} from "@storage/storageAuthToken";
 
 type SignOut = () => void;
+
+type PromiseType = {
+  onSuccess: (token: string) => void;
+  onFailure: (error: AxiosError) => void;
+};
 
 // par não perder a tipagem do axios usamos o AxiosInstance
 type APIInstanceProps = AxiosInstance & {
@@ -14,6 +22,10 @@ type APIInstanceProps = AxiosInstance & {
 const api = axios.create({
   baseURL: "http://192.168.1.42:3333",
 }) as APIInstanceProps;
+
+// fila de espera das requisições
+let failedQueue: Array<PromiseType> = [];
+let isRefreshing = false;
 
 api.registerInterceptTokenManager = (signOut) => {
   // trazemos o nosso interceptador aqui para dentro
@@ -28,8 +40,8 @@ api.registerInterceptTokenManager = (signOut) => {
       // status 401 é requisição não autorizada, pode ser relacionada ao token
       if (requestError?.response?.status === 401) {
         if (
-          requestError.reponse.data?.message === "token.expired" ||
-          requestError.reponse.data?.message === "token.invalid"
+          requestError.response.data?.message === "token.expired" ||
+          requestError.response.data?.message === "token.invalid"
         ) {
           // fluxo de novo token
           const { refresh_token } = await storageAuthTokenGet();
@@ -38,6 +50,78 @@ api.registerInterceptTokenManager = (signOut) => {
             signOut();
             return Promise.reject(requestError);
           }
+
+          const originalRequestConfig = requestError.config;
+
+          // primeira requisição não entra nesse if
+          if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+              failedQueue.push({
+                onSuccess: (token: string) => {
+                  originalRequestConfig.headers = {
+                    Authorization: `Bearer ${token}`,
+                  };
+                  resolve(api(originalRequestConfig));
+                },
+                onFailure: (error: AxiosError) => {
+                  reject(error);
+                },
+              });
+            });
+          }
+
+          isRefreshing = true;
+
+          // buscar o token atualizado
+          return new Promise(async (resolve, reject) => {
+            try {
+              // solicita novo token
+              const { data } = await api.post("/sessions/refresh-token", {
+                refresh_token,
+              });
+
+              // salva no dispositivo do usuário
+              await storageAuthTokenSave({
+                token: data.token,
+                refresh_token: data.refresh_token,
+              });
+
+              if (originalRequestConfig.data) {
+                originalRequestConfig.data = JSON.parse(
+                  originalRequestConfig.data
+                );
+              }
+
+              // atualizar o headers
+              originalRequestConfig.headers = {
+                Authorization: `Bearer ${data.token}`,
+              };
+              // atualizar api
+              api.defaults.headers.common[
+                "Authorization"
+              ] = `Bearer ${data.token}`;
+
+              // reenviar as requisições
+              failedQueue.forEach((request) => {
+                request.onSuccess(data.token);
+              });
+
+              console.log("TOKEN ATUALIZADO");
+
+              resolve(api(originalRequestConfig));
+            } catch (error: any) {
+              failedQueue.forEach((request) => {
+                request.onFailure(error);
+              });
+
+              signOut();
+              reject(error);
+            } finally {
+              isRefreshing = false;
+              // limpa fila de requisições
+              failedQueue = [];
+            }
+          });
         }
 
         // é não autorizado, mas não é relacionado ao token
